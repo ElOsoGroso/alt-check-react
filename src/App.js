@@ -9,9 +9,16 @@ const App = () => {
   const [category, setCategory] = React.useState("USER");
   const [results, setResults] = React.useState([]);
   const [search_field, setSearchField] = React.useState("");
-  const handleFirstNameChange = ({ target }) => {
+  const handleFieldValueChange = ({ target }) => {
     setSearchField(target.value);
   };
+  const handleKeyDown = (e) => {
+    console.log('hi')
+    if (e.key === 'Enter') {
+      console.log('Enter')
+      getResults()
+    }
+  }
   const getResults = () => {
     console.log(search_field)
 
@@ -31,12 +38,15 @@ const App = () => {
         </header>
       <CategoryTabs category={category} onChange={setCategory} />
       <div className = "label">{category === 'USER' ? 'Enter the twitch username you want to search' : 'Enter the RSN you want to search'}</div>
+      <div>
       <TextBox
         name = "input"
-        onChange = {handleFirstNameChange}
+        onChange = {handleFieldValueChange}
+        onKeyDown = {handleKeyDown}
         value = {search_field}
         />
       <button className = "button2" onClick={getResults}>Search</button>
+      </div>
       <div>
         <Table
               template={results.template}

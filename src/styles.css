@@ -72,13 +72,14 @@
   .text-box {
     width:50%;
     margin-top:5px;
-    vertical-align:center;
+    /* vertical-align:center; */
     margin-left:2px;
     margin-right:4px;
     font-size: 26pt;
     box-shadow: 0 4px 6px -5px hsl(0, 0%, 40%), inset 0px 4px 6px -5px black;
     border-radius:0.5em;
     padding-left:12px;
+    padding-top: 3px;
   }
   
   .label{
@@ -119,11 +120,15 @@
   }
 
   .button2 {
-    font-size: 26pt;
+    height:50px;
+    font-size: 19pt;
     background-color: #60f060;
     filter:drop-shadow(2px 2px 1px black);
     border-radius:0.5em;
-    padding-top: 5px;
+    padding: 12px 25px;
+    text-align: center;
+    vertical-align:top;
+
   }
   body{
     background-color: rgb(204, 204, 204);
