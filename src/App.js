@@ -2,8 +2,8 @@ import React from "react";
 import CategoryTabs from "./components/CategoryTabs/CategoryTabs.js";
 import "./styles.css";
 import logo from './Images/AltChecker.jpg'
-import Button from "./components/CategoryTabs/Button.js";
-
+import TextBox from "./components/CategoryTabs/TextBox.js";
+import Table from "./components/Table.js"
 
 const App = () => {
   const [category, setCategory] = React.useState("USER");
@@ -14,12 +14,14 @@ const App = () => {
   };
   const getResults = () => {
     console.log(search_field)
-    console.log(results)
+
     fetch(`https://alt-checker-az-func.azurewebsites.net/api/HttpTriggerAlt?username=${search_field}`)
       .then((response) => response.json())
       .then((results) => {
         setResults(results);
       });
+      console.log(results.rows)
+      console.log(results.template)
   };
 
   return (
@@ -28,14 +30,21 @@ const App = () => {
           <img src={logo} className="App-logo" alt="logo" />
         </header>
       <CategoryTabs category={category} onChange={setCategory} />
-      <div>{category === 'USER' ? 'Enter the username you want to search' : 'Enter the RSN you want to search'}</div>
-      <Button
+      <div className = "label">{category === 'USER' ? 'Enter the twitch username you want to search' : 'Enter the RSN you want to search'}</div>
+      <TextBox
         name = "input"
         onChange = {handleFirstNameChange}
         value = {search_field}
         />
-      <button onClick={getResults}>Search</button>
-      <div>{/* Do something with the reuslts */}</div>
+      <button className = "button2" onClick={getResults}>Search</button>
+      <div>
+        <Table
+              template={results.template}
+              rows={results.rows}
+              className="center-container"
+              rowCount
+            />
+            </div>
     </div>
   );
 };

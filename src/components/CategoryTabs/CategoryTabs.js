@@ -1,6 +1,6 @@
 const CategoryTabs = ({ category, onChange }) => {
     return (
-      <div>
+      <div className = "tab">
         <CategoryButton
           label="Search by Username"
           categoryId="USER"

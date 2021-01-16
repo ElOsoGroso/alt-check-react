@@ -3,3 +3,128 @@
     text-align: center;
   }
   
+  .div-table {
+    margin-top:5px;
+    display: table;
+    width: 100%;
+    position: relative;
+    filter:drop-shadow(2px 2px 1px black);
+
+  }
+  .row-count {
+    position: absolute;
+    left: 0px;
+    top: -18px;
+    color: rgb(117, 117, 117);
+    font-style: italic;
+    font-size: 0.85rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .tr {
+    display: table-row;
+    background:  #3b833b;
+    opacity: 1;
+    z-index: 0;
+    transition: transform 0.2s;
+    position: relative;
+  }
+  
+  .row-alert {
+    display: block;
+    position: absolute;
+    left: -8px;
+    top: 7px;
+  }
+  
+  .td {
+    display:block;
+    background:  #9b9bac;
+
+  }
+  
+  .div-table-heading,
+  .styled-table thead {
+    background-color:  #60f060;
+    /* display: table-header-group; */
+    font-weight: bold;
+    padding: 14px 16px;
+    color: #000000;
+    position: relative;
+  }
+  
+  .div-table-body,
+  .styled-table tbody {
+    display: table-row-group;
+  }
+  
+  .div-table-cell,
+  .styled-table th {
+    display: table-cell;
+    padding: 13px 10px;
+    background-color:  #dadada;;
+    border-right: 1px solid darken( #b5b5c2, 15%);
+    vertical-align: middle;
+    text-align: left;
+    white-space: pre-wrap;
+  }
+  .text-box {
+    width:50%;
+    margin-top:5px;
+    vertical-align:center;
+    margin-left:2px;
+    margin-right:4px;
+    font-size: 26pt;
+    box-shadow: 0 4px 6px -5px hsl(0, 0%, 40%), inset 0px 4px 6px -5px black;
+    border-radius:0.5em;
+    padding-left:12px;
+  }
+  
+  .label{
+    margin-top:10px;
+    margin-left:.5%;
+    font-weight: bold;
+  }
+  
+  .tab {
+    overflow: hidden;
+    background-color: rgb(129, 129, 129);
+    /* filter:drop-shadow(0px 4px 3px black) */
+  }
+  
+  /* Style the buttons that are used to open the tab content */
+  .tab button {
+    background-color: #60f060;
+    float: left;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+  }
+  
+  /* Change background color of buttons on hover */
+  .tab button:hover {
+    background-color: #ddd;
+  }
+  
+  /* Create an active/current tablink class */
+  .tab button.active {
+    background-color: #ccc;
+  }
+  
+  /* Style the tab content */
+  .tabcontent {
+    display: none;
+    padding: 6px 12px;
+  }
+
+  .button2 {
+    font-size: 26pt;
+    background-color: #60f060;
+    filter:drop-shadow(2px 2px 1px black);
+    border-radius:0.5em;
+    padding-top: 5px;
+  }
+  body{
+    background-color: rgb(204, 204, 204);
+  }
