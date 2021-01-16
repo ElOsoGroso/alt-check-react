@@ -14,6 +14,7 @@ const App = () => {
   };
   const getResults = () => {
     console.log(search_field)
+    console.log(results)
     fetch(`https://alt-checker-az-func.azurewebsites.net/api/HttpTriggerAlt?username=${search_field}`)
       .then((response) => response.json())
       .then((results) => {
