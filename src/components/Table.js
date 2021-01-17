@@ -9,6 +9,8 @@ export default class Table extends Component {
       template = [],
       totalRows = null
     } = this.props
+
+    
     return (
       
       <React.Fragment>
@@ -74,15 +76,7 @@ class Row extends React.Component {
         {template.map((t, i) => {
           const cellContent = (
             <React.Fragment>
-              {typeof t.render === 'function' ? (
-                <span className="cell">{t.render(cells[t.id])}</span>
-              ) : Array.isArray(cells[t.id]) ? (
-                cells[t.id].map((cellData, j) => (
-                  <span className="cell" key={j}>
-                    {cellData}
-                  </span>
-                ))
-              ) : (
+              {  (
                 <span className="cell">{cells[t.id]}</span>
               )}
             </React.Fragment>

@@ -6,6 +6,7 @@ import TextBox from "./components/CategoryTabs/TextBox.js";
 import Table from "./components/Table.js"
 import UserInfo from "./components/UserInfo.js";
 
+
 function yearsToYearsMonthsDays(value)
 {
     var totalDays = value * 365;
@@ -20,15 +21,18 @@ const App = () => {
   const [category, setCategory] = React.useState("USER");
   const [results, setResults] = React.useState([]);
   const [search_field, setSearchField] = React.useState("");
-  const [userInfo, setUserInfo] = React.useState(null)
+  const [userInfo, setUserInfo] = React.useState(null);
+  const [susMeter,setSusMeter] = React.useState(10);
   const handleFieldValueChange = ({ target }) => {
     setSearchField(target.value);
-  };
+  };  
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       getResults()
     }
   }
+
   const getResults = () => {
     if(category==="USER"){
     fetch(`https://alt-checker-az-func.azurewebsites.net/api/HttpTriggerAlt?userinfo=${search_field}`)
@@ -47,7 +51,22 @@ const App = () => {
     .then((results) => {
       console.log(results)
       if(category === "RSN"){
+        let result = results.rows.map(a => a.NAME);
+        let occurenceCount = new Map([...new Set(result)].map(
+          x => [x, result.filter(y => y === x).length]));
+        console.log(occurenceCount)
+        console.log((occurenceCount.size*10))
+        setSusMeter((occurenceCount.size*10))
         setUserInfo(null)
+      }
+      else if(category === "USER"){
+        let result = results.rows.map(a => a.MESSAGE);
+        let occurenceCount = new Map([...new Set(result)].map(
+          x => [x, result.filter(y => y === x).length]));
+        console.log(occurenceCount)
+        console.log((occurenceCount.size*10))
+        setSusMeter((occurenceCount.size*10))
+        console.log(susMeter)
       }
       setResults(results);
     });
@@ -72,6 +91,7 @@ const App = () => {
       <div>
         {userInfo ?
         <UserInfo
+          susMeter = {susMeter}
           userName = {userInfo.display_name}
           description ={userInfo.description}
           userId = {userInfo.id}
@@ -79,7 +99,10 @@ const App = () => {
           views = {userInfo.view_count}
           accountAge = {yearsToYearsMonthsDays(Math.abs(Date.now() - Date.parse(userInfo.created_at))/31536000000)}
         />:
+        category === "USER" ?
         <div className = "label">No User Found</div>
+        :
+        null
       }
         <Table
               template={results.template}
