@@ -23,6 +23,7 @@ const App = () => {
   const [search_field, setSearchField] = React.useState("");
   const [userInfo, setUserInfo] = React.useState(null);
   const [susMeter,setSusMeter] = React.useState(10);
+  const [hiscores,setHiscores] = React.useState(null);
   const handleFieldValueChange = ({ target }) => {
     setSearchField(target.value);
   };  
@@ -58,6 +59,22 @@ const App = () => {
         console.log((occurenceCount.size*10))
         setSusMeter((occurenceCount.size*10))
         setUserInfo(null)
+        console.log("holy canoli")
+        console.log(results)
+        console.log(results.rows)
+        if(results && results.rows.length>0){
+        fetch(`https://oldschool.tools/ajax/hiscore-stats/${search_field}`)
+        .then((response) => response.json())
+        .then((results) => {
+          console.log(results)
+          if(results.data){
+          setHiscores(results.data[0]);}
+          else{
+          setHiscores(null)
+          }
+        });
+      }
+
       }
       else if(category === "USER"){
         let result = results.rows.map(a => a.MESSAGE);
@@ -91,6 +108,7 @@ const App = () => {
       <div>
         {userInfo ?
         <UserInfo
+          hiscores = {hiscores}
           susMeter = {susMeter}
           userName = {userInfo.display_name}
           description ={userInfo.description}

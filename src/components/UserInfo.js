@@ -39,6 +39,39 @@ const UserInfo = ({susMeter,userName,userId, description,image_url,views,account
         />
       </div>
           </div>
+        <div className = "hiscores">
+        <div className ="statdiv1">
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        </div>
+        <div className ="statdiv2">
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        </div>
+        </div>
+        <div className ="statdiv3">
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="stat">99</p>
+        <p className="totallabel">Total:</p>
+        <p className="stattotal">99</p>
+        </div>
       </div>
   );
 };
