@@ -4,7 +4,7 @@ const UserInfo = ({userName,userId, description,image_url,views,accountAge }) =>
   return (
       <div className = "usercontainer">     
             <div className = "profileimg">  
-          <img src= {image_url}></img>
+          <img src= {image_url} alt="Meaningful text"></img>
           </div>  
           <div className ="userinfo">
             <span className="label">Username:</span><br /><span className = "infoItem"> {userName}</span><br />
