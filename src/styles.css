@@ -89,7 +89,11 @@
     margin-left:.5%;
     font-weight: bold;
   }
-  
+  .label1{
+    margin-top:35px;
+    margin-left:.5%;
+    font-weight: bold;
+  }
   .tab {
     overflow: hidden;
     background-color: rgb(129, 129, 129);
@@ -202,13 +206,13 @@
     text-decoration-color: white;
   }
   .statdiv2{
-    margin-left:58px;
+    margin-left:60px;
     margin-top:9px;
     text-decoration-color: white;
   }
   .statdiv3{ 
     margin-top:9px;
-    margin-left:-30px;
+    margin-left:58px;
     text-decoration-color: white;
   }
   .stat{
@@ -227,4 +231,11 @@
     margin-left:-30px;
     color:yellow;
     margin-top:-10px;
+  }
+  .username{
+    margin-left:-115px;
+    font-weight: bold;
+  }
+  .marginHi{
+    margin-top:13px;
   }

@@ -5,7 +5,7 @@ import logo from './Images/AltChecker.jpg'
 import TextBox from "./components/CategoryTabs/TextBox.js";
 import Table from "./components/Table.js"
 import UserInfo from "./components/UserInfo.js";
-
+import HiScores from "./components/CategoryTabs/Hiscores.js";
 
 function yearsToYearsMonthsDays(value)
 {
@@ -24,6 +24,7 @@ const App = () => {
   const [userInfo, setUserInfo] = React.useState(null);
   const [susMeter,setSusMeter] = React.useState(10);
   const [hiscores,setHiscores] = React.useState(null);
+  const [hiscoreName,setHiscoreName] = React.useState("");
   const handleFieldValueChange = ({ target }) => {
     setSearchField(target.value);
   };  
@@ -50,27 +51,26 @@ const App = () => {
     fetch(`https://alt-checker-az-func.azurewebsites.net/api/HttpTriggerAlt?${category === "USER" ? "username" : "rsn"}=${search_field}`)
     .then((response) => response.json())
     .then((results) => {
-      console.log(results)
       if(category === "RSN"){
         let result = results.rows.map(a => a.NAME);
         let occurenceCount = new Map([...new Set(result)].map(
           x => [x, result.filter(y => y === x).length]));
-        console.log(occurenceCount)
-        console.log((occurenceCount.size*10))
         setSusMeter((occurenceCount.size*10))
         setUserInfo(null)
-        console.log("holy canoli")
-        console.log(results)
-        console.log(results.rows)
-        if(results && results.rows.length>0){
+
+        if(results && results.rows.length>0)
+        {
         fetch(`https://oldschool.tools/ajax/hiscore-stats/${search_field}`)
         .then((response) => response.json())
         .then((results) => {
-          console.log(results)
-          if(results.data){
-          setHiscores(results.data[0]);}
+          if(results.stats){
+          setHiscores(results.stats);
+          setHiscoreName(search_field);
+          console.log(hiscoreName)
+        }
           else{
           setHiscores(null)
+          setHiscoreName("")
           }
         });
       }
@@ -80,10 +80,23 @@ const App = () => {
         let result = results.rows.map(a => a.MESSAGE);
         let occurenceCount = new Map([...new Set(result)].map(
           x => [x, result.filter(y => y === x).length]));
-        console.log(occurenceCount)
-        console.log((occurenceCount.size*10))
-        setSusMeter((occurenceCount.size*10))
-        console.log(susMeter)
+        const mapSort1 = new Map([...occurenceCount.entries()].sort((a, b) => b[1] - a[1]));
+        let searchThing = mapSort1.keys().next().value
+        fetch(`https://oldschool.tools/ajax/hiscore-stats/${searchThing}`)
+        .then((response) => response.json())
+        .then((results) => {
+          if(results.stats){
+            setHiscores(results.stats);
+            console.log(searchThing)
+            setHiscoreName(searchThing);
+            console.log(hiscoreName)
+          }
+          else{
+            setHiscores(null)
+            setHiscoreName("")
+          }
+          setSusMeter((occurenceCount.size*10))
+        });
       }
       setResults(results);
     });
@@ -105,9 +118,10 @@ const App = () => {
         />
       <button className = "button2" onClick={getResults}>Search</button>
       </div>
-      <div>
+      <div className = {category==="RSN" ? "marginHi" : null}>
         {userInfo ?
         <UserInfo
+          hiscorename = {hiscoreName}
           hiscores = {hiscores}
           susMeter = {susMeter}
           userName = {userInfo.display_name}
@@ -116,7 +130,11 @@ const App = () => {
           image_url = {userInfo.profile_image_url}
           views = {userInfo.view_count}
           accountAge = {yearsToYearsMonthsDays(Math.abs(Date.now() - Date.parse(userInfo.created_at))/31536000000)}
-        />:
+        />: !userInfo && hiscores ? 
+        <HiScores 
+                  hiscores= {hiscores}
+                  username ={hiscoreName}
+        /> :
         category === "USER" ?
         <div className = "label">No User Found</div>
         :

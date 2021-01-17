@@ -1,13 +1,11 @@
 import React from "react";
+import HiScores from "./CategoryTabs/Hiscores"
 
-const UserInfo = ({susMeter,userName,userId, description,image_url,views,accountAge }) => {
-
+const UserInfo = ({hiscorename,hiscores,susMeter,userName,userId, description,image_url,views,accountAge }) => {
+    console.log(hiscores)
     const meterBar = React.useRef();
-    console.log(susMeter)
     React.useEffect(() => {
         let degree = 100 -susMeter
-        console.log("degree")
-        console.log(degree)
         meterBar.current.style.setProperty(
             "--meter-color",
             `hsl(${degree}, 100%, 50%)`
@@ -39,40 +37,13 @@ const UserInfo = ({susMeter,userName,userId, description,image_url,views,account
         />
       </div>
           </div>
-        <div className = "hiscores">
-        <div className ="statdiv1">
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
+          {
+        hiscores ?
+        <HiScores
+          hiscores = {hiscores} 
+          username = {hiscorename}
+        /> : null}
         </div>
-        <div className ="statdiv2">
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        </div>
-        </div>
-        <div className ="statdiv3">
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="stat">99</p>
-        <p className="totallabel">Total:</p>
-        <p className="stattotal">99</p>
-        </div>
-      </div>
   );
 };
 
