@@ -4,16 +4,16 @@ export default class Table extends Component {
   render() {
     const {
       className = '',
-      onHeaderLabelClicked,
       rowCount = false,
       rows = [],
-      selectedRowIndex,
       template = [],
       totalRows = null
     } = this.props
     console.log(rows)
     return (
+      
       <React.Fragment>
+        <div className = "label">{rowCount && rows.length > 0 ? "History" : ""}</div>
         <span role="status" className="row-count">
           <span className="row-count-text">
             {rowCount && rows.length > 0 ? `Results: ${totalRows || rows.length}` : ''}
@@ -29,7 +29,6 @@ export default class Table extends Component {
                   <th
                     className={`div-table-head`}
                     key={i}
-                    onClick={() => (onHeaderLabelClicked ? onHeaderLabelClicked(t.id) : undefined)}
                     tabIndex={undefined}
                   >
                     <div className="flex-row">
@@ -46,7 +45,6 @@ export default class Table extends Component {
                 <Row
                   cells={row}
                   template={template}
-                  selected={i === selectedRowIndex}
                   onCellClick={this.onCellClick}
                   alert={row.ALERT_YN}
                   rowIndex={i + 1}

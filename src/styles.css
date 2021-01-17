@@ -133,3 +133,23 @@
   body{
     background-color: rgb(204, 204, 204);
   }
+
+  .usercontainer {
+    margin-top: 20px;
+    margin-left: 10px;
+    display: flex;
+
+  }
+  
+  .profileimg {
+    flex: 0 0 25%;
+  }
+  
+  .userinfo {
+    flex: 1;
+    margin-top:20px;
+
+  }
+  .infoItem{
+    margin-left: 15px;
+  }
