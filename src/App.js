@@ -25,14 +25,11 @@ const App = () => {
     setSearchField(target.value);
   };
   const handleKeyDown = (e) => {
-    console.log('hi')
     if (e.key === 'Enter') {
-      console.log('Enter')
       getResults()
     }
   }
   const getResults = () => {
-    console.log(search_field)
     if(category==="USER"){
     fetch(`https://alt-checker-az-func.azurewebsites.net/api/HttpTriggerAlt?userinfo=${search_field}`)
     .then((response) => response.json())
@@ -49,6 +46,9 @@ const App = () => {
     .then((response) => response.json())
     .then((results) => {
       console.log(results)
+      if(category === "RSN"){
+        setUserInfo(null)
+      }
       setResults(results);
     });
   };

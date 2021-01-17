@@ -9,7 +9,6 @@ export default class Table extends Component {
       template = [],
       totalRows = null
     } = this.props
-    console.log(rows)
     return (
       
       <React.Fragment>
