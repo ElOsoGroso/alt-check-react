@@ -63,6 +63,7 @@ const App = () => {
         fetch(`https://salty-taiga-58601.herokuapp.com/stats/${search_field}`)
         .then((response) => response.json())
         .then((results) => {
+          console.log(results)
           if(results.skills){
           setHiscores(results.skills);
           setHiscoreName(search_field);
