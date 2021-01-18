@@ -60,7 +60,7 @@ const App = () => {
 
         if(results && results.rows.length>0)
         {
-        fetch(`https://oldschool.tools/ajax/hiscore-stats/${search_field}`)
+        fetch(`https://salty-taiga-58601.herokuapp.com/stats/${search_field}`)
         .then((response) => response.json())
         .then((results) => {
           if(results.stats){
