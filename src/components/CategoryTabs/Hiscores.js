@@ -8,7 +8,7 @@ const HiScores = ({ hiscores,username }) => {
         <p className="stat">{hiscores.ranged.level}</p>
         <p className="stat">{hiscores.prayer.level}</p>
         <p className="stat">{hiscores.magic.level}</p>
-        <p className="stat">{hiscores.runecrafting.level}</p>
+        <p className="stat">{hiscores.runecraft.level}</p>
         <p className="stat">{hiscores.attack.level}</p>
         </div>
         <div className ="statdiv2">

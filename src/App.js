@@ -82,11 +82,11 @@ const App = () => {
           x => [x, result.filter(y => y === x).length]));
         const mapSort1 = new Map([...occurenceCount.entries()].sort((a, b) => b[1] - a[1]));
         let searchThing = mapSort1.keys().next().value
-        fetch(`https://oldschool.tools/ajax/hiscore-stats/${searchThing}`)
+        fetch(`https://salty-taiga-58601.herokuapp.com/stats/${searchThing}`)
         .then((response) => response.json())
         .then((results) => {
-          if(results.stats){
-            setHiscores(results.stats);
+          if(results.skills){
+            setHiscores(results.skills);
             console.log(searchThing)
             setHiscoreName(searchThing);
             console.log(hiscoreName)
