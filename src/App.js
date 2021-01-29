@@ -6,6 +6,7 @@ import TextBox from "./components/CategoryTabs/TextBox.js";
 import Table from "./components/Table.js"
 import UserInfo from "./components/UserInfo.js";
 import HiScores from "./components/CategoryTabs/Hiscores.js";
+import netlifyIdentity from "netlify-identity-widget";
 
 function yearsToYearsMonthsDays(value)
 {
@@ -25,6 +26,8 @@ const App = () => {
   const [susMeter,setSusMeter] = React.useState(10);
   const [hiscores,setHiscores] = React.useState(null);
   const [hiscoreName,setHiscoreName] = React.useState("");
+  const [userStore,setLoginUser] = React.useState(null);
+
   const handleFieldValueChange = ({ target }) => {
     setSearchField(target.value);
   };  
@@ -34,6 +37,38 @@ const App = () => {
       getResults()
     }
   }
+  const handleLogin = () => {
+    console.log("okay")
+    netlifyIdentity.open();
+  }
+  const loginUser =() => {
+    if (netlifyIdentity && netlifyIdentity.currentUser()) {
+      const {
+        app_metadata, created_at, confirmed_at, email, id, user_metadata
+      } = netlifyIdentity.currentUser();
+  
+      localStorage.setItem(
+        "currentOpenSaucedUser",
+        JSON.stringify({...app_metadata, created_at, confirmed_at, email, id, ...user_metadata})
+      );
+    }
+  }
+ 
+ const logoutUser = () => {
+     localStorage.removeItem("currentOpenSaucedUser");
+   }
+  React.useEffect(()=> {
+    netlifyIdentity.init({});
+    const user = localStorage.getItem("currentOpenSaucedUser");
+    if (user) {
+      this.setState({user: JSON.parse(user)});
+    } else {
+      loginUser();
+    }
+    netlifyIdentity.on("login", (user) => this.setState({user}, loginUser()));
+    netlifyIdentity.on("logout", (user) => this.setState({user: null}, logoutUser()));
+    setLoginUser(user)
+  });
 
   const getResults = () => {
     if(category==="USER"){
@@ -107,6 +142,7 @@ const App = () => {
     <div>
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
+          <button onClick={handleLogin}> Login </button>
         </header>
       <CategoryTabs category={category} onChange={setCategory} />
       <div className = "label">{category === 'USER' ? 'Enter the twitch username you want to search' : 'Enter the RSN you want to search'}</div>
