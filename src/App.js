@@ -26,7 +26,6 @@ const App = () => {
   const [susMeter,setSusMeter] = React.useState(10);
   const [hiscores,setHiscores] = React.useState(null);
   const [hiscoreName,setHiscoreName] = React.useState("");
-  const [userStore,setLoginUser] = React.useState(null);
 
   const handleFieldValueChange = ({ target }) => {
     setSearchField(target.value);
@@ -67,7 +66,6 @@ const App = () => {
     }
     netlifyIdentity.on("login", (user) => this.setState({user}, loginUser()));
     netlifyIdentity.on("logout", (user) => this.setState({user: null}, logoutUser()));
-    setLoginUser(user)
   });
 
   const getResults = () => {
