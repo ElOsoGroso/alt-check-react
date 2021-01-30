@@ -261,14 +261,15 @@
     display:flex;
     height:220px;
     background-image: url(Images/AltChecker.jpg);
-    background-size:auto;
+    background-size:cover;
+    background-repeat: no-repeat;
   }
   .loginbutton{
     margin-top: 20px;
     margin-left: 20px;
     width:35%; 
-    height:360px; 
-    max-height: 360px;
+    height:400px; 
+    max-height: 400px;
     border: 0;
     background:transparent;
     background-image: url(Images/Login.png);
