@@ -1,13 +1,13 @@
 import React from "react";
 import CategoryTabs from "./components/CategoryTabs/CategoryTabs.js";
 import "./styles.css";
-import logo from './Images/AltChecker.jpg'
 import TextBox from "./components/CategoryTabs/TextBox.js";
 import Table from "./components/Table.js"
 import UserInfo from "./components/UserInfo.js";
 import HiScores from "./components/CategoryTabs/Hiscores.js";
 import netlifyIdentity from "netlify-identity-widget";
-
+import { trackPromise, usePromiseTracker } from "react-promise-tracker";
+import Loader from 'react-loader-spinner';
 function yearsToYearsMonthsDays(value)
 {
     var totalDays = value * 365;
@@ -26,7 +26,8 @@ const App = () => {
   const [susMeter,setSusMeter] = React.useState(10);
   const [hiscores,setHiscores] = React.useState(null);
   const [hiscoreName,setHiscoreName] = React.useState("");
-
+  const [user,setUser] = React.useState(null);
+  const {promiseInProgress} = usePromiseTracker();
   const handleFieldValueChange = ({ target }) => {
     setSearchField(target.value);
   };  
@@ -37,39 +38,20 @@ const App = () => {
     }
   }
   const handleLogin = () => {
-    console.log("okay")
     netlifyIdentity.open();
   }
-  const loginUser =() => {
-    if (netlifyIdentity && netlifyIdentity.currentUser()) {
-      const {
-        app_metadata, created_at, confirmed_at, email, id, user_metadata
-      } = netlifyIdentity.currentUser();
-  
-      localStorage.setItem(
-        "currentOpenSaucedUser",
-        JSON.stringify({...app_metadata, created_at, confirmed_at, email, id, ...user_metadata})
-      );
-    }
-  }
- 
- const logoutUser = () => {
-     localStorage.removeItem("currentOpenSaucedUser");
-   }
+
   React.useEffect(()=> {
     netlifyIdentity.init({});
-    const user = localStorage.getItem("currentOpenSaucedUser");
-    if (user) {
-      this.setState({user: JSON.parse(user)});
-    } else {
-      loginUser();
-    }
-    netlifyIdentity.on("login", (user) => this.setState({user}, loginUser()));
-    netlifyIdentity.on("logout", (user) => this.setState({user: null}, logoutUser()));
-  });
+    console.log(netlifyIdentity.currentUser())
+    netlifyIdentity.on("close",() => setUser(netlifyIdentity.currentUser()))
+   
+  },[]);
 
   const getResults = () => {
+  
     if(category==="USER"){
+      trackPromise(
     fetch(`https://alt-checker-az-func.azurewebsites.net/api/HttpTriggerAlt?userinfo=${search_field}`)
     .then((response) => response.json())
     .then((results) => {
@@ -78,9 +60,8 @@ const App = () => {
       else{
       setUserInfo(null)
       }
-    });
+    }));
     }
-    console.log(userInfo)
     fetch(`https://alt-checker-az-func.azurewebsites.net/api/HttpTriggerAlt?${category === "USER" ? "username" : "rsn"}=${search_field}`)
     .then((response) => response.json())
     .then((results) => {
@@ -96,11 +77,9 @@ const App = () => {
         fetch(`https://salty-taiga-58601.herokuapp.com/stats/${search_field}`)
         .then((response) => response.json())
         .then((results) => {
-          console.log(results)
           if(results.skills){
           setHiscores(results.skills);
           setHiscoreName(search_field);
-          console.log(hiscoreName)
         }
           else{
           setHiscores(null)
@@ -121,9 +100,7 @@ const App = () => {
         .then((results) => {
           if(results.skills){
             setHiscores(results.skills);
-            console.log(searchThing)
             setHiscoreName(searchThing);
-            console.log(hiscoreName)
           }
           else{
             setHiscores(null)
@@ -138,52 +115,77 @@ const App = () => {
 
   return (
     <div>
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <button onClick={handleLogin}> Login </button>
-        </header>
-      <CategoryTabs category={category} onChange={setCategory} />
-      <div className = "label">{category === 'USER' ? 'Enter the twitch username you want to search' : 'Enter the RSN you want to search'}</div>
-      <div>
-      <TextBox
-        name = "input"
-        onChange = {handleFieldValueChange}
-        onKeyDown = {handleKeyDown}
-        value = {search_field}
-        />
-      <button className = "button2" onClick={getResults}>Search</button>
-      </div>
-      <div className = {category==="RSN" ? "marginHi" : null}>
-        {userInfo ?
-        <UserInfo
-          hiscorename = {hiscoreName}
-          hiscores = {hiscores}
-          susMeter = {susMeter}
-          userName = {userInfo.display_name}
-          description ={userInfo.description}
-          userId = {userInfo.id}
-          image_url = {userInfo.profile_image_url}
-          views = {userInfo.view_count}
-          accountAge = {yearsToYearsMonthsDays(Math.abs(Date.now() - Date.parse(userInfo.created_at))/31536000000)}
-        />: !userInfo && hiscores ? 
-        <HiScores 
-                  hiscores= {hiscores}
-                  username ={hiscoreName}
-        /> :
-        category === "USER" ?
-        <div className = "label">No User Found</div>
-        :
-        null
-      }
-        <Table
-              template={results.template}
-              rows={results.rows}
-              className="center-container"
-              rowCount
-            />
+      <header className="App-header">
+        <div className="empty"></div>
+        {user ?
+        <button className="logout" onClick={handleLogin}>Logout</button>
+        :null}
+      </header>
+      {user && !promiseInProgress ? (
+        <>
+          <CategoryTabs category={category} onChange={setCategory} />
+          <div>
+            <div className="label">
+              {category === "USER"
+                ? "Enter the twitch username you want to search"
+                : "Enter the RSN you want to search"}
             </div>
+            <div>
+              <TextBox
+                name="input"
+                onChange={handleFieldValueChange}
+                onKeyDown={handleKeyDown}
+                value={search_field}
+              />
+              <button className="button2" onClick={getResults}>
+                Search
+              </button>
+            </div>
+            <div className={category === "RSN" ? "marginHi" : null}>
+              {userInfo ? (
+                <UserInfo
+                  hiscorename={hiscoreName}
+                  hiscores={hiscores}
+                  susMeter={susMeter}
+                  userName={userInfo.display_name}
+                  description={userInfo.description}
+                  userId={userInfo.id}
+                  image_url={userInfo.profile_image_url}
+                  views={userInfo.view_count}
+                  accountAge={yearsToYearsMonthsDays(
+                    Math.abs(Date.now() - Date.parse(userInfo.created_at)) /
+                      31536000000
+                  )}
+                />
+              ) : !userInfo && hiscores ? (
+                <HiScores hiscores={hiscores} username={hiscoreName} />
+              ) : category === "USER" ? (
+                <div className="label">No User Found</div>
+              ) : null}
+              <Table
+                template={results.template}
+                rows={results.rows}
+                className="center-container"
+                rowCount
+              />
+            </div>
+          </div>
+        </>
+      ) : promiseInProgress ?     <div
+            style={{
+              width: "100%",
+              height: "100",
+              display: "flex",
+             justifyContent: "center",
+             alignItems: "center"
+            }}
+          >
+            <Loader type="ThreeDots" color="#2BAD60" height="100" width="100" />
+          </div>
+        :
+        <button className="loginbutton" onClick={handleLogin}>
+          </button> }
     </div>
   );
 };
-
 export default App;
