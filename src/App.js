@@ -43,7 +43,7 @@ const App = () => {
 
   React.useEffect(()=> {
     netlifyIdentity.init({});
-    console.log(netlifyIdentity.currentUser())
+    // console.log(netlifyIdentity.currentUser())
     netlifyIdentity.on("close",() => setUser(netlifyIdentity.currentUser()))
    
   },[]);
@@ -90,7 +90,7 @@ const App = () => {
 
       }
       else if(category === "USER"){
-        let result = results.rows.map(a => a.MESSAGE);
+        let result = results.rows.map(a => a.MESSAGE.toLowerCase().trim());
         let occurenceCount = new Map([...new Set(result)].map(
           x => [x, result.filter(y => y === x).length]));
         const mapSort1 = new Map([...occurenceCount.entries()].sort((a, b) => b[1] - a[1]));
