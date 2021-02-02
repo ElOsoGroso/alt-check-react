@@ -4,7 +4,6 @@ import altImage from "../Images/AltGnome.png"
 const UserInfo = ({flagged,markUser,user,hiscorename,hiscores,susMeter,userName,userId, description,image_url,views,accountAge }) => {
     const meterBar = React.useRef();
     React.useEffect(() => {
-      console.log(flagged)
         let degree = 100 -susMeter
         meterBar.current.style.setProperty(
             "--meter-color",
@@ -42,7 +41,7 @@ const UserInfo = ({flagged,markUser,user,hiscorename,hiscores,susMeter,userName,
               </div>
             </div>
           { 
-          user.app_metadata.roles[0] == "Admin" ?
+          user.app_metadata.roles[0] === "Admin" ?
             <button className = "markSus" onClick={markUser}>Flag This User</button> : null}          
           </div>
           {flagged ? 

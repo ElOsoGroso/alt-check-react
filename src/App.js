@@ -19,16 +19,7 @@ function yearsToYearsMonthsDays(value)
     var result = years + " years, " + months + " months, " + days + " days";
     return result
 }
-function isAdmin(user){
-  console.log("testing")
-  if(user){
-    user.app_metadata.roles.forEach(role => {
-      if(role ==="Admin"){
-        return true;
-      }
-    });}
-  return false;
-}
+
 const App = () => {
   const [category, setCategory] = React.useState("USER");
   const [results, setResults] = React.useState([]);
@@ -58,7 +49,6 @@ const App = () => {
     netlifyIdentity.init({});
     console.log(netlifyIdentity.currentUser())
     netlifyIdentity.on("close",() => setUser(netlifyIdentity.currentUser()))
-    console.log(user)
 
   },[]);
 
@@ -226,7 +216,7 @@ const App = () => {
                 <HiScores hiscores={hiscores} username={hiscoreName} />
                 <div className="meter-alt-container">
                 {
-                  user.app_metadata.roles[0] == "Admin" ?
+                  user.app_metadata.roles[0] === "Admin" ?
                 <button className = "markSusRSN" onClick={markRSN}>Flag This RSN</button> : null}
                 {flagged ? 
                 <div className = "altImg">
