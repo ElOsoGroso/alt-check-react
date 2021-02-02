@@ -154,7 +154,15 @@
   
   .userinfo {
     flex: 0.8;
-
+    margin-left:5px;
+  }
+  
+  .altImg{
+    margin-left: 20px;
+    flex: .6;
+  }
+  .imagealt{
+    height: 70px;
   }
   .hiscores{
     display:flex;
@@ -170,6 +178,7 @@
   }
  
   .meter {
+    flex: 0 0 auto;
     margin-left: 9px;
     width: 200px;
     height: 30px;
@@ -177,14 +186,19 @@
     border-radius: 5px;
     position: relative;
     overflow: hidden;
+    display:flex;
   }
   .meter-bar {
+    flex: 0 0 auto;
     background-color: var(--meter-color);
     position: absolute;
     left: 0px;
     top: 0px;
     height: 100%;
     transition: width 300ms, background 300ms;
+  }
+  .meter-alt-container{
+    display:flex;
   }
   .meter::after {
     content: "";
@@ -284,4 +298,28 @@
   }
 
 
-  
+  .markSus{
+    font-weight: bold;
+    width: 200px;
+    height: 30px;
+    margin-top: 10px;
+    margin-left:9px;
+    color:white;
+    background-color: red;
+  }
+  .markSus:hover{
+    cursor:pointer;
+  }
+
+  .markSusRSN{
+    width: 200px;
+    height: 30px;
+    margin-top: 40px;
+    margin-left: 30px;
+    color:white;
+    background-color: red;
+  }
+  .markSusRSN:hover{
+    cursor:pointer;
+  }
+ 
