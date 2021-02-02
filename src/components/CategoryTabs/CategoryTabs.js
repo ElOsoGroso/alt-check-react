@@ -11,6 +11,16 @@ const CategoryTabs = ({ category, onChange }) => {
           categoryId="RSN"
           onClick={onChange}
         />
+        <CategoryButton
+          label="View Flagged Users"
+          categoryId="FLAGUSER"
+          onClick={onChange}
+        />
+        <CategoryButton
+          label="View Flagged RSNs"
+          categoryId="FLAGRSN"
+          onClick={onChange}
+        />
       </div>
     );
   };

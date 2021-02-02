@@ -38,13 +38,26 @@ const App = () => {
   const url = 'https://alt-checker-az-func.azurewebsites.net/api'
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      getResults()
+      handleResults()
     }
   }
+
   const handleLogin = () => {
     netlifyIdentity.open();
   }
-
+  const handleChange = (cat) => {
+    setCategory(cat)
+    if(cat==="FLAGRSN" || cat==="FLAGUSER"){
+      setUserInfo(null)
+      setHiscores(null)
+      if(cat ==="FLAGRSN"){
+        getFlaggedRSNs()
+      }
+      else{
+        getFlaggedUsers()
+      }
+    }
+  }
   React.useEffect(()=> {
     netlifyIdentity.init({});
     console.log(netlifyIdentity.currentUser())
@@ -58,6 +71,7 @@ const App = () => {
     .then((response) => response.json())
     .then((results) => {
       if(results.data){
+      setFlagged(true)
       setUserInfo(results.data[0]);}
       else{
       setUserInfo(null)
@@ -76,93 +90,129 @@ const App = () => {
       }});
     }
   }
-  const getResults = () => {
-    if(category==="USER"){
-      trackPromise(
-        fetch(`${url}/HttpTriggerAlt?userinfo=${search_field}`)
-        .then((response) => response.json())
-        .then((results) => {
-          if(results.data){
-          console.log(results.data)
-          setUserInfo(results.data[0]);}
-          else{
-          setUserInfo(null)
+
+  const getFlaggedRSNs = () => {
+    trackPromise(
+      fetch(`${url}/HttpTriggerAlt?flaggedRSN=true`)
+      .then((response) => response.json())
+      .then((results) => {
+        if(results.data){
+        console.log(results.data)
+        setUserInfo(results.data[0]);
+      }
+        else{
+        setUserInfo(null)
+        }
+      }));
+  }
+  const getFlaggedUsers = () => {
+    trackPromise(
+      fetch(`${url}/HttpTriggerAlt?flaggedUser=true`)
+      .then((response) => response.json())
+      .then((results) => {
+        if(results.data){
+        console.log(results.data)
+        setUserInfo(results.data[0]);
+      }
+        else{
+        setUserInfo(null)
+        }
+      }));
+  }
+  const getUserInfo = () => {
+    trackPromise(
+      fetch(`${url}/HttpTriggerAlt?userinfo=${search_field}`)
+      .then((response) => response.json())
+      .then((results) => {
+        if(results.data){
+        console.log(results.data)
+        setUserInfo(results.data[0]);}
+        else{
+        setUserInfo(null)
+        }
+      }));
+  }
+  const getRSNResults = (results) => {
+    setUserInfo(null)
+    let result = results.rows.map(a => a.NAME);
+    // let susCount = 0
+    let occurenceCount = new Map([...new Set(result)].map(
+      x => [x, result.filter(y => y === x).length]));
+    setSusMeter(susMeter + occurenceCount.size*10)
+    // susCount += susCount + occurenceCount.size*10;
+    if(results && results.rows.length>0)
+    {
+      fetch(`https://salty-taiga-58601.herokuapp.com/stats/${search_field}`)
+      .then((response) => response.json())
+      .then((results) => {
+        if(results.skills){
+          setHiscores(results.skills);
+          if(results.skills.overall.level <1500){
+          setSusMeter(susMeter + 10)
+          // susCount = susCount + 10;
           }
-        }));
+          setHiscoreName(search_field);
+        }
+        else{
+          setHiscores(null)
+          setHiscoreName("")
+        }
+      });
+}
+  }
+
+  const getUserResults = (results) => {
+    let result = results.rows.map(a => a.MESSAGE.toLowerCase().trim());
+    let occurenceCount = new Map([...new Set(result)].map(
+      x => [x, result.filter(y => y === x).length]));
+    setSusMeter((susMeter) => susMeter + occurenceCount.size*10)
+    const mapSort1 = new Map([...occurenceCount.entries()].sort((a, b) => b[1] - a[1]));
+    let searchThing = mapSort1.keys().next().value
+    fetch(`https://salty-taiga-58601.herokuapp.com/stats/${searchThing}`)
+    .then((response) => response.json())
+    .then((results) => {
+      if(results.skills){
+        setHiscores(results.skills);
+        if(results.skills.overall.level <1500){
+          setSusMeter((susMeter) => susMeter + 10)
+        }
+        setHiscoreName(searchThing);
+      }
+      else{
+        setHiscores(null)
+        setHiscoreName("")
+      }
+    });
+    //  return susCount;
+  }
+  const handleResults = () => {
+    if(category==="USER"){
+      getUserInfo()
     }
-    console.log("wtf")
     trackPromise(
       fetch(`${url}/HttpTriggerAlt?${category === "USER" ? "username" : "rsn"}=${search_field}`)
       .then((response) => response.json())
-      .then((results) => {
-        let susMeterAmount = 0;
-        let occurenceCount = new Map();
-        console.log("inside")
-        if(category === "RSN"){
-          console.log("okay")
-          setUserInfo(null)
-          let result = results.rows.map(a => a.NAME);
-          occurenceCount = new Map([...new Set(result)].map(
-            x => [x, result.filter(y => y === x).length]));
-          susMeterAmount += occurenceCount.size*10;
-          if(results && results.rows.length>0)
-          {
-            fetch(`https://salty-taiga-58601.herokuapp.com/stats/${search_field}`)
-            .then((response) => response.json())
-            .then((results) => {
-              if(results.skills){
-                console.log("Hi")
-                setHiscores(results.skills);
-                if(results.skills.overall.level <1500){
-                  susMeterAmount += 10;
-                }
-                setHiscoreName(search_field);
-              }
-              else{
-                setHiscores(null)
-                setHiscoreName("")
-              }
-            });
-      }
-
-      }
-      else if(category === "USER"){
-        let result = results.rows.map(a => a.MESSAGE.toLowerCase().trim());
-        occurenceCount = new Map([...new Set(result)].map(
-          x => [x, result.filter(y => y === x).length]));
-        susMeterAmount += occurenceCount.size*10;
-        const mapSort1 = new Map([...occurenceCount.entries()].sort((a, b) => b[1] - a[1]));
-        let searchThing = mapSort1.keys().next().value
-        fetch(`https://salty-taiga-58601.herokuapp.com/stats/${searchThing}`)
-        .then((response) => response.json())
         .then((results) => {
-          if(results.skills){
-            setHiscores(results.skills);
-            if(results.skills.overall.level <1500){
-              susMeterAmount += 10;
-            }
-            setHiscoreName(searchThing);
+          setSusMeter(0)
+          console.log("inside")
+          if(category === "RSN"){
+            console.log("rsn")
+            getRSNResults(results)
           }
-          else{
-            setHiscores(null)
-            setHiscoreName("")
+          else if(category === "USER"){
+            console.log("user")
+            getUserResults(results)
           }
-        });
-      }
-      console.log(results)
-      if(results.flagged){
-        susMeterAmount = 100;
-      }
-      if(susMeterAmount>100){
-        susMeterAmount = 100;
-      }
-      console.log(susMeterAmount);
-      console.log(results.flagged)
-      setFlagged(results.flagged)
-      setSusMeter((susMeterAmount))
-      setResults(results);
-    }));
-  };
+          console.log(results)
+          if(results.flagged || susMeter > 100){
+            setSusMeter(100)
+          }
+          console.log(susMeter);
+          console.log(results.flagged)
+          setFlagged(results.flagged)
+          setResults(results);
+      }));
+  }
 
   return (
     <div>
@@ -174,7 +224,7 @@ const App = () => {
       </header>
       {user && !promiseInProgress ? (
         <>
-          <CategoryTabs category={category} onChange={setCategory} />
+          <CategoryTabs category={category} onChange={handleChange} />
           <div>
             <div className="label">
               {category === "USER"
@@ -188,7 +238,7 @@ const App = () => {
                 onKeyDown={handleKeyDown}
                 value={search_field}
               />
-              <button className="button2" onClick={getResults}>
+              <button className="button2" onClick={handleResults}>
                 Search
               </button>
             </div>
