@@ -34,8 +34,8 @@ const App = () => {
   const handleFieldValueChange = ({ target }) => {
     setSearchField(target.value);
   };  
-  const url = 'http://localhost:7071/api'
-  // const url = 'https://alt-checker-az-func.azurewebsites.net/api'
+  // const url = 'http://localhost:7071/api'
+  const url = 'https://alt-checker-az-func.azurewebsites.net/api'
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleResults()
