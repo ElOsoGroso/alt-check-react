@@ -86,9 +86,8 @@ const App = () => {
   }
   React.useEffect(()=> {
     netlifyIdentity.init({});
-    console.log(netlifyIdentity.currentUser())
+    // console.log(netlifyIdentity.currentUser())
     netlifyIdentity.on("close",() => setUser(netlifyIdentity.currentUser()))
-
   },[]);
 
   const markUser = () => {
@@ -96,9 +95,7 @@ const App = () => {
     fetch(`${url}/HttpTriggerAlt?marktype=user&markmessage=${search_field}&siteuser=${user.user_metadata.full_name}`)
     .then((response) => response.json())
     .then((results) => {
-      console.log(results)
       if(results.toString()==="true"){
-        console.log("its true")
       setFlagged(true)
     }
     });
@@ -109,9 +106,7 @@ const App = () => {
       fetch(`${url}/HttpTriggerAlt?marktype=rsn&markmessage=${search_field}&siteuser=${user.user_metadata.full_name}`)      
     .then((response) => response.json())
     .then((results) => {
-      console.log(results)
       if(results.toString()==="true"){
-        console.log("its true")
         setFlagged(true)
       }
     });
@@ -125,7 +120,6 @@ const App = () => {
       .then((response) => response.json())
       .then((results) => {
         if(results.data){
-        console.log(results.data)
         setUserInfo(results.data[0]);}
         else{
         setUserInfo(null)
@@ -135,11 +129,9 @@ const App = () => {
   const getRSNResults = (results) => {
     setUserInfo(null)
     let result = results.rows.map(a => a.NAME);
-    // let susCount = 0
     let occurenceCount = new Map([...new Set(result)].map(
       x => [x, result.filter(y => y === x).length]));
     setSusMeter(susMeter + occurenceCount.size*10)
-    // susCount += susCount + occurenceCount.size*10;
     if(results && results.rows.length>0)
     {
       fetch(`https://salty-taiga-58601.herokuapp.com/stats/${search_field}`)
@@ -149,7 +141,6 @@ const App = () => {
           setHiscores(results.skills);
           if(results.skills.overall.level <1500){
           setSusMeter(susMeter + 10)
-          // susCount = susCount + 10;
           }
           setHiscoreName(search_field);
         }
@@ -194,21 +185,15 @@ const App = () => {
       .then((response) => response.json())
         .then((results) => {
           setSusMeter(0)
-          console.log("inside")
           if(category === "RSN"){
-            console.log("rsn")
             getRSNResults(results)
           }
           else if(category === "USER"){
-            console.log("user")
             getUserResults(results)
           }
-          console.log(results)
           if(results.flagged || susMeter > 100){
             setSusMeter(100)
           }
-          console.log(susMeter);
-          console.log(results.flagged)
           setFlagged(results.flagged)
           setResults(results);
       }));
@@ -284,12 +269,13 @@ const App = () => {
               ) : category === "USER" ? (
                 <div className="label">No User Found</div>
               ) : null}
+              {results.rows && results.rows.length > 0 ?
               <Table
                 template={results.template}
                 rows={results.rows}
                 className="center-container"
                 rowCount
-              />
+              /> : null}
             </div>
           </div>
         </>
