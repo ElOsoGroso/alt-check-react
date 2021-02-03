@@ -14,7 +14,6 @@ export default class Table extends Component {
     return (
       
       <React.Fragment>
-        <div className = "label1">{rowCount && rows.length > 0 ? "History" : ""}</div>
         <span role="status" className="row-count">
           <span className="row-count-text">
             {rowCount && rows.length > 0 ? `Results: ${totalRows || rows.length}` : ''}

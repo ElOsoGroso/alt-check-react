@@ -34,8 +34,8 @@ const App = () => {
   const handleFieldValueChange = ({ target }) => {
     setSearchField(target.value);
   };  
-  // const url = 'http://localhost:7071/api'
-  const url = 'https://alt-checker-az-func.azurewebsites.net/api'
+  const url = 'http://localhost:7071/api'
+  // const url = 'https://alt-checker-az-func.azurewebsites.net/api'
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleResults()
@@ -58,6 +58,32 @@ const App = () => {
       }
     }
   }
+  const getFlaggedRSNs = () => {
+    trackPromise(
+      fetch(`${url}/HttpTriggerAlt?flaggedRSN=true`)
+      .then((response) => response.json())
+      .then((results) => {
+        if(results){
+        setResults(results);
+      }
+        else{
+        setResults(null)
+        }
+      }));
+  }
+  const getFlaggedUsers = () => {
+    trackPromise(
+      fetch(`${url}/HttpTriggerAlt?flaggedUser=true`)
+      .then((response) => response.json())
+      .then((results) => {
+        if(results){
+          setResults(results);
+        }
+          else{
+          setResults(null)
+          }
+      }));
+  }
   React.useEffect(()=> {
     netlifyIdentity.init({});
     console.log(netlifyIdentity.currentUser())
@@ -70,12 +96,12 @@ const App = () => {
     fetch(`${url}/HttpTriggerAlt?marktype=user&markmessage=${search_field}&siteuser=${user.user_metadata.full_name}`)
     .then((response) => response.json())
     .then((results) => {
-      if(results.data){
+      console.log(results)
+      if(results.toString()==="true"){
+        console.log("its true")
       setFlagged(true)
-      setUserInfo(results.data[0]);}
-      else{
-      setUserInfo(null)
-      }});
+    }
+    });
     }
   }
   const markRSN = () => {
@@ -83,42 +109,16 @@ const App = () => {
       fetch(`${url}/HttpTriggerAlt?marktype=rsn&markmessage=${search_field}&siteuser=${user.user_metadata.full_name}`)      
     .then((response) => response.json())
     .then((results) => {
-      if(results.data){
-      setUserInfo(results.data[0]);}
-      else{
-      setUserInfo(null)
-      }});
+      console.log(results)
+      if(results.toString()==="true"){
+        console.log("its true")
+        setFlagged(true)
+      }
+    });
     }
   }
 
-  const getFlaggedRSNs = () => {
-    trackPromise(
-      fetch(`${url}/HttpTriggerAlt?flaggedRSN=true`)
-      .then((response) => response.json())
-      .then((results) => {
-        if(results.data){
-        console.log(results.data)
-        setUserInfo(results.data[0]);
-      }
-        else{
-        setUserInfo(null)
-        }
-      }));
-  }
-  const getFlaggedUsers = () => {
-    trackPromise(
-      fetch(`${url}/HttpTriggerAlt?flaggedUser=true`)
-      .then((response) => response.json())
-      .then((results) => {
-        if(results.data){
-        console.log(results.data)
-        setUserInfo(results.data[0]);
-      }
-        else{
-        setUserInfo(null)
-        }
-      }));
-  }
+
   const getUserInfo = () => {
     trackPromise(
       fetch(`${url}/HttpTriggerAlt?userinfo=${search_field}`)
@@ -226,22 +226,29 @@ const App = () => {
         <>
           <CategoryTabs category={category} onChange={handleChange} />
           <div>
-            <div className="label">
-              {category === "USER"
-                ? "Enter the twitch username you want to search"
-                : "Enter the RSN you want to search"}
-            </div>
-            <div>
-              <TextBox
-                name="input"
-                onChange={handleFieldValueChange}
-                onKeyDown={handleKeyDown}
-                value={search_field}
-              />
-              <button className="button2" onClick={handleResults}>
-                Search
-              </button>
-            </div>
+            {category === "USER" || category === "RSN" ? 
+              <div>
+              <div className="label">
+                {category === "USER"
+                  ? "Enter the twitch username you want to search"
+                  : "Enter the RSN you want to search"}
+              </div>
+              <div>
+                <TextBox
+                  name="input"
+                  onChange={handleFieldValueChange}
+                  onKeyDown={handleKeyDown}
+                  value={search_field}
+                />
+                <button className="button2" onClick={handleResults}>
+                  Search
+                </button>
+              </div> 
+            </div>: <div className="labelbig">
+                {category === "FLAGUSER"
+                  ? "List of All Flagged Users"
+                  : "List of All Flagged RSNs"}
+              </div> }
             <div className={category === "RSN" ? "marginHi" : null}>
               {userInfo && category === 'USER'? (
                 <UserInfo
