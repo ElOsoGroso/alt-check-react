@@ -249,7 +249,7 @@ const App = () => {
                   image_url={userInfo.profile_image_url}
                   views={userInfo.view_count}
                   accountAge={yearsToYearsMonthsDays(
-                    Math.abs(Date.now() - Date.parse(userInfo.created_at)) /
+                    Math.abs(Date.now() - Date.parse(userInfo.createdbenice_at)) /
                       31536000000
                   )}
                 />
@@ -258,7 +258,7 @@ const App = () => {
                 <HiScores hiscores={hiscores} username={hiscoreName} />
                 <div className="meter-alt-container">
                 {
-                  user.app_metadata.roles[0] === "Admin" ?
+                  user.app_metadata.roles && user.app_metadata.roles[0] === "Admin" ?
                 <button className = "markSusRSN" onClick={markRSN}>Flag This RSN</button> : null}
                 {flagged ? 
                 <div className = "altImg">

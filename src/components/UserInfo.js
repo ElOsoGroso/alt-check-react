@@ -41,7 +41,7 @@ const UserInfo = ({flagged,markUser,user,hiscorename,hiscores,susMeter,userName,
               </div>
             </div>
           { 
-          user.app_metadata.roles[0] === "Admin" ?
+          user.app_metadata.roles && user.app_metadata.roles[0] === "Admin" ?
             <button className = "markSus" onClick={markUser}>Flag This User</button> : null}          
           </div>
           {flagged ? 
