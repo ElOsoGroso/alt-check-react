@@ -12,6 +12,7 @@ import altImage from "./Images/AltGnome.png"
 
 function yearsToYearsMonthsDays(value)
 {
+    console.log(value)
     var totalDays = value * 365;
     var years = Math.floor(totalDays/365);
     var months = Math.floor((totalDays-(years *365))/30);
@@ -19,7 +20,44 @@ function yearsToYearsMonthsDays(value)
     var result = years + " years, " + months + " months, " + days + " days";
     return result
 }
+function levenstein(a, b){
+  if(!a || !b) return (a || b).length;
+  var m = [];
+  for(var i = 0; i <= b.length; i++){
+      m[i] = [i];
+      if(i === 0) continue;
+      for(var j = 0; j <= a.length; j++){
+          m[0][j] = j;
+          if(j === 0) continue;
+          m[i][j] = b.charAt(i - 1) === a.charAt(j - 1) ? m[i - 1][j - 1] : Math.min(
+              m[i-1][j-1] + 1,
+              m[i][j-1] + 1,
+              m[i-1][j] + 1
+          );
+      }
+  }
+  return m[b.length][a.length];
+}
 
+function clearOutCloseValues(map,compareString){
+  var keysToRemove = [];
+
+  for (const [key, value] of map.entries()) {
+    console.log(value)
+    let levensteindist = levenstein(compareString.replace(/\s+/g, ''),key.replace(/\s+/g, ''))
+    if(key.toString()!==compareString && key.toString().includes(compareString))
+    {
+      keysToRemove.push(key)
+    }
+    else if (levensteindist < 4 && (key.toString()!==compareString)){ //if they just spelled it wrong by 3 letters (assuming no spaces)
+      keysToRemove.push(key)
+    }
+  }
+  keysToRemove.forEach(element => {
+    map.delete(element)
+  });
+  console.log(map)
+}
 const App = () => {
   const [category, setCategory] = React.useState("USER");
   const [results, setResults] = React.useState([]);
@@ -46,6 +84,7 @@ const App = () => {
     netlifyIdentity.open();
   }
   const handleChange = (cat) => {
+    setResults([])
     setCategory(cat)
     if(cat==="FLAGRSN" || cat==="FLAGUSER"){
       setUserInfo(null)
@@ -113,7 +152,23 @@ const App = () => {
     }
   }
 
-
+  const getHiscores = (searchThing) => {
+    fetch(`https://salty-taiga-58601.herokuapp.com/stats/${searchThing}`)
+    .then((response) => response.json())
+    .then((results) => {
+      if(results.skills){
+        setHiscores(results.skills);
+        if(results.skills.overall.level <1500){
+          setSusMeter((susMeter) => susMeter + 10)
+        }
+        setHiscoreName(searchThing);
+      }
+      else{
+        setHiscores(null)
+        setHiscoreName("")
+      }
+    });
+  }
   const getUserInfo = () => {
     trackPromise(
       fetch(`${url}/HttpTriggerAlt?userinfo=${search_field}`)
@@ -134,47 +189,27 @@ const App = () => {
     setSusMeter(susMeter + occurenceCount.size*10)
     if(results && results.rows.length>0)
     {
-      fetch(`https://salty-taiga-58601.herokuapp.com/stats/${search_field}`)
-      .then((response) => response.json())
-      .then((results) => {
-        if(results.skills){
-          setHiscores(results.skills);
-          if(results.skills.overall.level <1500){
-          setSusMeter(susMeter + 10)
-          }
-          setHiscoreName(search_field);
-        }
-        else{
-          setHiscores(null)
-          setHiscoreName("")
-        }
-      });
-}
+      getHiscores(search_field)
+    }
   }
 
+  
   const getUserResults = (results) => {
     let result = results.rows.map(a => a.MESSAGE.toLowerCase().trim());
-    let occurenceCount = new Map([...new Set(result)].map(
+    let occurenceCountMap = new Map([...new Set(result)].map(
       x => [x, result.filter(y => y === x).length]));
-    setSusMeter((susMeter) => susMeter + occurenceCount.size*10)
-    const mapSort1 = new Map([...occurenceCount.entries()].sort((a, b) => b[1] - a[1]));
-    let searchThing = mapSort1.keys().next().value
-    fetch(`https://salty-taiga-58601.herokuapp.com/stats/${searchThing}`)
-    .then((response) => response.json())
-    .then((results) => {
-      if(results.skills){
-        setHiscores(results.skills);
-        if(results.skills.overall.level <1500){
-          setSusMeter((susMeter) => susMeter + 10)
-        }
-        setHiscoreName(searchThing);
-      }
-      else{
-        setHiscores(null)
-        setHiscoreName("")
-      }
-    });
-    //  return susCount;
+    //get the most often ocurring from the map
+    const mapSortUser = new Map([...occurenceCountMap.entries()].sort((a, b) => b[1] - a[1]));
+    let searchUser = mapSortUser.keys().next().value
+    //Remove noise words, misspellings or extra symbols
+    clearOutCloseValues(occurenceCountMap,searchUser)
+    getHiscores(searchUser)
+
+    let rsnresult = results.rsn_rows.map(a => a.NAME.toLowerCase().trim());
+    let rsnOccurenceCountMap = new Map([...new Set(rsnresult)].map(
+      x => [x, result.filter(y => y === x).length]));
+    //Remove noise words, misspellings or extra symbols
+    setSusMeter((susMeter) => susMeter + (rsnOccurenceCountMap.size*.7+occurenceCountMap.size*.3)*10) //weight the username occurence count alot higher
   }
   const handleResults = () => {
     if(category==="USER"){
@@ -185,6 +220,7 @@ const App = () => {
       .then((response) => response.json())
         .then((results) => {
           setSusMeter(0)
+          setHiscores(null)
           if(category === "RSN"){
             getRSNResults(results)
           }
@@ -249,7 +285,7 @@ const App = () => {
                   image_url={userInfo.profile_image_url}
                   views={userInfo.view_count}
                   accountAge={yearsToYearsMonthsDays(
-                    Math.abs(Date.now() - Date.parse(userInfo.createdbenice_at)) /
+                    Math.abs(Date.now() - Date.parse(userInfo.created_at)) /
                       31536000000
                   )}
                 />
@@ -268,6 +304,8 @@ const App = () => {
                 </div>
               ) : category === "USER" ? (
                 <div className="label">No User Found</div>
+              ) : category === "RSN" ? (
+                <div className="label">No RSN Found</div>
               ) : null}
               {results.rows && results.rows.length > 0 ?
               <Table
