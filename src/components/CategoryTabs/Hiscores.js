@@ -2,7 +2,7 @@ const HiScores = ({ hiscores,username}) => {
     return (
       <div>
       <div className ="RSN_HISCORE_CONTAIN">
-        {hiscores != 404 ?
+        {hiscores !== 404 ?
         <div className = "hiscores">         
         <div className ="statdiv1">
         <p className="stat">{hiscores.attack.level}</p>
