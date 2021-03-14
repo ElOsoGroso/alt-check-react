@@ -7,19 +7,21 @@ export default class Table extends Component {
       rowCount = false,
       rows = [],
       template = [],
-      totalRows = null
+      totalRows = null,
+      clickCell,
+      title
     } = this.props
 
-
     return (
-      
+      <div className={'div-table ' + className}>
+        <h3 className="table-title">{title}</h3>
       <React.Fragment>
         <span role="status" className="row-count">
           <span className="row-count-text">
             {rowCount && rows.length > 0 ? `Results: ${totalRows || rows.length}` : ''}
           </span>
         </span>
-        <table className={'div-table ' + className}>
+        <table className="table">
           {template && rows.length > 0 ? (
             <thead
               className={'div-table-heading'}
@@ -45,7 +47,7 @@ export default class Table extends Component {
                 <Row
                   cells={row}
                   template={template}
-                  onCellClick={this.onCellClick}
+                  onCellClick={clickCell}
                   alert={row.ALERT_YN}
                   rowIndex={i + 1}
                   key={row.ID + i.toString()}
@@ -55,6 +57,7 @@ export default class Table extends Component {
           </tbody>
         </table>
       </React.Fragment>
+      </div>
     )
   }
 }
@@ -64,7 +67,8 @@ class Row extends React.Component {
     const {
       label,
       template,
-      cells
+      cells,
+      onCellClick
     } = this.props
     return (
       <tr
@@ -75,9 +79,9 @@ class Row extends React.Component {
         {template.map((t, i) => {
           const cellContent = (
             <React.Fragment>
-              {  (
-                <span className="cell">{cells[t.id]}</span>
-              )}
+              { (t.id == "MESSAGE" || t.id == "NAME" || t.id == "FLAGGED_RSN" || t.id == "FLAGGED_USER") && cells[t.id] != "NO RSN INCLUDED" ?   (
+                <span className="cell-click" onClick={() => onCellClick(cells[t.id],t.id)}>{cells[t.id]}</span>
+              ) : <span className="cell">{cells[t.id]}</span>}
             </React.Fragment>
           )
           return (

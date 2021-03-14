@@ -1,6 +1,9 @@
-const HiScores = ({ hiscores,username }) => {
+const HiScores = ({ hiscores,username}) => {
     return (
-        <div className = "hiscores">
+      <div>
+      <div className ="RSN_HISCORE_CONTAIN">
+        {hiscores != 404 ?
+        <div className = "hiscores">         
         <div className ="statdiv1">
         <p className="stat">{hiscores.attack.level}</p>
         <p className="stat">{hiscores.strength.level}</p>
@@ -31,9 +34,49 @@ const HiScores = ({ hiscores,username }) => {
         <p className="stat">{hiscores.farming.level}</p>
         <p className="totallabel">Total:</p>
         <p className="stattotal">{hiscores.overall.level}</p>
-        <p className="username">{username}</p>
         </div>
+
+      </div> :
+      <div className = "hiscores">         
+      <div className ="statdiv1">
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
       </div>
+      <div className ="statdiv2">
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      </div>
+      <div className ="statdiv3">
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="stat">0</p>
+      <p className="totallabel">Total:</p>
+      <p className="stattotal">0</p>
+      </div>
+      </div>
+      
+      }
+
+      </div>
+            <p className="username">{username}</p>
+            </div>
+
     );
   };
 

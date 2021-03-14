@@ -12,16 +12,28 @@
     display: table;
     width: 99%;
     position: relative;
-    border-width: 2px;
-    border-style: solid;
-    filter:drop-shadow(2px 2px 1px black);
+    /* border-width: 2px;
+    border-style: solid; */
+    /* filter:drop-shadow(2px 2px 1px black); */
 
   }
+  .table-title{
+    text-align: center;
+    margin:1px;
+  }
+  .table{
+    margin-left:3px;
+    display: table;
+    width: 99%;
+    position: relative;
+    border-width: 2px;
+    border-style: solid;
+    filter:drop-shadow(2px 2px 1px black); 
+  }
   .row-count {
-    position: absolute;
     left: 0px;
-    top: -18px;
-    color: rgb(117, 117, 117);
+    top:2px;
+    color: rgb(68, 68, 68);
     font-style: italic;
     font-size: 0.85rem;
     width: 100%;
@@ -64,7 +76,13 @@
   .styled-table tbody {
     display: table-row-group;
   }
-  
+  .cell-click{
+    color:rgb(5, 109, 23);
+    text-decoration: underline;
+  }
+  .cell-click:hover{
+    cursor: pointer;
+  }
   .div-table-cell,
   .styled-table th {
     display: table-cell;
@@ -179,13 +197,16 @@
     height: 70px;
   }
   .hiscores{
-    display:flex;
-    margin-left:10px;
+    display:inline-flex;
+    /* margin-left:10px; */
     width:240px;
     height:300px;
     flex-grow:0;
     background-image: url(Images/hiscores.png);
     background-size:cover;
+  }
+  .RSN_HISCORE_CONTAIN{
+    text-align: center;
   }
   .infoItem{
     margin-left: 15px;
@@ -211,8 +232,12 @@
     height: 100%;
     transition: width 300ms, background 300ms;
   }
-  .meter-alt-container{
+  .tablecontainer{
+    margin-top:0px;
     display:flex;
+  }
+  .meter-alt-container{
+    display:inline-flex;
   }
   .meter::after {
     content: "";
@@ -262,7 +287,9 @@
     margin-top:-10px;
   }
   .username{
-    margin-left:-115px;
+    position:relative;
+    margin-left:0%;
+    text-align: center;
     font-weight: bold;
   }
   .marginHi{
@@ -313,6 +340,7 @@
 
 
   .markSus{
+    text-align: center;
     font-weight: bold;
     width: 200px;
     height: 30px;
@@ -328,8 +356,8 @@
   .markSusRSN{
     width: 200px;
     height: 30px;
-    margin-top: 40px;
-    margin-left: 30px;
+    /* margin-top: 40px;
+    margin-left: 30px; */
     color:white;
     background-color: red;
   }

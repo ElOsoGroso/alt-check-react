@@ -12,7 +12,6 @@ import altImage from "./Images/AltGnome.png"
 
 function yearsToYearsMonthsDays(value)
 {
-    console.log(value)
     var totalDays = value * 365;
     var years = Math.floor(totalDays/365);
     var months = Math.floor((totalDays-(years *365))/30);
@@ -52,6 +51,9 @@ function clearOutCloseValues(map,compareString){
     else if (levensteindist < 4 && (key.toString()!==compareString)){ //if they just spelled it wrong by 3 letters (assuming no spaces)
       keysToRemove.push(key)
     }
+    else if (compareString === "no rsn included"){
+      keysToRemove.push(key)
+    }
   }
   keysToRemove.forEach(element => {
     map.delete(element)
@@ -76,7 +78,7 @@ const App = () => {
   const url = 'https://alt-checker-az-func.azurewebsites.net/api'
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      handleResults()
+      handleResults(search_field,category)
     }
   }
 
@@ -85,7 +87,9 @@ const App = () => {
   }
   const handleChange = (cat) => {
     setResults([])
+    setUserInfo(null)
     setCategory(cat)
+    setHiscores(null)
     if(cat==="FLAGRSN" || cat==="FLAGUSER"){
       setUserInfo(null)
       setHiscores(null)
@@ -154,8 +158,13 @@ const App = () => {
 
   const getHiscores = (searchThing) => {
     fetch(`https://salty-taiga-58601.herokuapp.com/stats/${searchThing}`)
-    .then((response) => response.json())
-    .then((results) => {
+    .then((response) => {
+      if (response.status >= 200 && response.status <= 299) {
+        return response.json();
+      } else {
+        throw Error(response.statusText);
+      }
+    }).then((results) => {
       if(results.skills){
         setHiscores(results.skills);
         if(results.skills.overall.level <1500){
@@ -163,15 +172,23 @@ const App = () => {
         }
         setHiscoreName(searchThing);
       }
-      else{
+      else{    
         setHiscores(null)
         setHiscoreName("")
+      
       }
+    }).catch(function(error){
+      console.log(error)
+      console.log("broken")
+        setHiscores(404)
+        setHiscoreName("No Results Found For: " + searchThing)
+      
     });
   }
-  const getUserInfo = () => {
+  const getUserInfo = (message) => {
+    console.log("search field is " + message)
     trackPromise(
-      fetch(`${url}/HttpTriggerAlt?userinfo=${search_field}`)
+      fetch(`${url}/HttpTriggerAlt?userinfo=${message}`)
       .then((response) => response.json())
       .then((results) => {
         if(results.data){
@@ -181,7 +198,7 @@ const App = () => {
         }
       }));
   }
-  const getRSNResults = (results) => {
+  const getRSNResults = (results,message) => {
     setUserInfo(null)
     let result = results.rows.map(a => a.NAME);
     let occurenceCount = new Map([...new Set(result)].map(
@@ -189,40 +206,47 @@ const App = () => {
     setSusMeter(susMeter + occurenceCount.size*10)
     if(results && results.rows.length>0)
     {
-      getHiscores(search_field)
+      getHiscores(message)
     }
   }
-
   
   const getUserResults = (results) => {
     let result = results.rows.map(a => a.MESSAGE.toLowerCase().trim());
     let occurenceCountMap = new Map([...new Set(result)].map(
       x => [x, result.filter(y => y === x).length]));
-    //get the most often ocurring from the map
+    //get the most oft ocurring RSN from the map
     const mapSortUser = new Map([...occurenceCountMap.entries()].sort((a, b) => b[1] - a[1]));
     let searchUser = mapSortUser.keys().next().value
     //Remove noise words, misspellings or extra symbols
     clearOutCloseValues(occurenceCountMap,searchUser)
-    getHiscores(searchUser)
 
-    let rsnresult = results.rsn_rows.map(a => a.NAME.toLowerCase().trim());
-    let rsnOccurenceCountMap = new Map([...new Set(rsnresult)].map(
-      x => [x, result.filter(y => y === x).length]));
-    //Remove noise words, misspellings or extra symbols
-    setSusMeter((susMeter) => susMeter + (rsnOccurenceCountMap.size*.7+occurenceCountMap.size*.3)*10) //weight the username occurence count alot higher
+  if(searchUser !== null && searchUser !== 'undefined')
+    {
+      getHiscores(searchUser)
+      
+      let rsnresult = results.rsn_rows.map(a => a.NAME.toLowerCase().trim());
+      let rsnOccurenceCountMap = new Map([...new Set(rsnresult)].map(
+        x => [x, result.filter(y => y === x).length]));
+      setSusMeter((susMeter) => susMeter + (rsnOccurenceCountMap.size*.7+occurenceCountMap.size*.3)*10) //weight the username occurence count alot higher
+    }
+    else{
+      setHiscores(null)
+      setResults([])
+    }
+
   }
-  const handleResults = () => {
+  const handleResults = (message,category) => {
     if(category==="USER"){
-      getUserInfo()
+      getUserInfo(message)
     }
     trackPromise(
-      fetch(`${url}/HttpTriggerAlt?${category === "USER" ? "username" : "rsn"}=${search_field}`)
+      fetch(`${url}/HttpTriggerAlt?${category === "USER" ? "username" : "rsn"}=${message}`)
       .then((response) => response.json())
         .then((results) => {
           setSusMeter(0)
           setHiscores(null)
           if(category === "RSN"){
-            getRSNResults(results)
+            getRSNResults(results,message)
           }
           else if(category === "USER"){
             getUserResults(results)
@@ -231,10 +255,25 @@ const App = () => {
             setSusMeter(100)
           }
           setFlagged(results.flagged)
-          setResults(results);
+          setResults(results)
       }));
-  }
 
+  }
+  const clickCell = (message,id) => {
+    let cat = ""
+    if(message != null){
+      setSearchField(message)
+      if(id === "MESSAGE" || id === "FLAGGED_USER"){
+        setCategory("RSN")
+        cat = "RSN"
+      }
+      else{
+        setCategory("USER")
+        cat = "USER"
+      }
+      handleResults(message,cat)
+    }
+  }
   return (
     <div>
       <header className="App-header">
@@ -261,7 +300,7 @@ const App = () => {
                   onKeyDown={handleKeyDown}
                   value={search_field}
                 />
-                <button className="button2" onClick={handleResults}>
+                <button className="button2" onClick={() => handleResults(search_field,category)}>
                   Search
                 </button>
               </div> 
@@ -290,8 +329,8 @@ const App = () => {
                   )}
                 />
               ) : !userInfo && hiscores && category === 'RSN' ? (
-                <div>
-                <HiScores hiscores={hiscores} username={hiscoreName} />
+                <div className = "RSN_HISCORE_CONTAIN">
+                <HiScores  hiscores={hiscores} username={hiscoreName} />
                 <div className="meter-alt-container">
                 {
                   user.app_metadata.roles && user.app_metadata.roles[0] === "Admin" ?
@@ -307,13 +346,42 @@ const App = () => {
               ) : category === "RSN" ? (
                 <div className="label">No RSN Found</div>
               ) : null}
-              {results.rows && results.rows.length > 0 ?
+              {results.rows && results.rows.length > 0 && results.rsn_rows && results.rsn_rows.length > 0 ?
+                <div className="tablecontainer">
+                <Table
+                  template={results.template}
+                  rows={results.rows}
+                  className="center-container"
+                  rowCount
+                  clickCell = {clickCell}
+                  title = {"RSNs Entered By: " + search_field}
+                />
+                <Table
+                  template={results.rsn_template}
+                  rows={results.rsn_rows}
+                  className="center-container"
+                  rowCount
+                  clickCell = {clickCell}
+                  title = {"Twitch Accounts That Used RSN: " + results.most_frequent}
+
+                /></div> : (results.rows && results.rows.length > 0) && (category === "USER" || category === "RSN") ?                 
+                <Table
+                template={results.template}
+                rows={results.rows}
+                className="center-container"
+                rowCount
+                clickCell = {clickCell}
+                title = {"Twitch Accounts That Used RSN: " + search_field}
+              /> : category === "FLAGRSN" || category === "FLAGUSER" ?
               <Table
                 template={results.template}
                 rows={results.rows}
                 className="center-container"
                 rowCount
-              /> : null}
+                clickCell = {clickCell}
+                title = ""
+              /> :
+              null}
             </div>
           </div>
         </>
