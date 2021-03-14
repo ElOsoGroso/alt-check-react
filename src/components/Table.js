@@ -79,7 +79,7 @@ class Row extends React.Component {
         {template.map((t, i) => {
           const cellContent = (
             <React.Fragment>
-              { (t.id == "MESSAGE" || t.id == "NAME" || t.id == "FLAGGED_RSN" || t.id == "FLAGGED_USER") && cells[t.id] != "NO RSN INCLUDED" ?   (
+              { (t.id == "MESSAGE" || t.id === "NAME" || t.id === "FLAGGED_RSN" || t.id === "FLAGGED_USER") && cells[t.id] !== "NO RSN INCLUDED" ?   (
                 <span className="cell-click" onClick={() => onCellClick(cells[t.id],t.id)}>{cells[t.id]}</span>
               ) : <span className="cell">{cells[t.id]}</span>}
             </React.Fragment>
